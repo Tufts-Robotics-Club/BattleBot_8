@@ -73,8 +73,8 @@ void loop() {
       Serial.print(data.joystickA);
       Serial.print(' ');
       Serial.println(data.joystickB);
-      runMotorL(joystickA);
-      runMotorR(joystickB);
+      runMotorL(data.joystickA);
+      runMotorR(data.joystickB);
     }
   } 
 }
