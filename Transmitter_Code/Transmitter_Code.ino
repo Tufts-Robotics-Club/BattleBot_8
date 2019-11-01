@@ -11,6 +11,9 @@ RHReliableDatagram RadioManager(RadioDriver, TRANSMITTER_ADDRESS);
  
 void setup()
 {
+  pinMode(7, OUTPUT);
+  pinMode(6, OUTPUT);
+  digitalWrite(7, LOW);
   Serial.begin(9600); 
   if (!RadioManager.init())    
     Serial.println("Failed to initialize the receiver module. Please check the wiring sir.");
@@ -61,6 +64,7 @@ void loop()
   
   int pot = analogRead(A4);
   
+  analogWrite(6, (pot/4)*(3.3/5.0));
   //joystick readings are between 0 and 1024
   //scale the readings to -255 and 255
   data.motorSpeed_R = -((joyStickRight_X - 512)/2);
