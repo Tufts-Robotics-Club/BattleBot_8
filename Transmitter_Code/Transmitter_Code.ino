@@ -58,24 +58,21 @@ void loop()
   joyStickLeft_Y = zeroOffset(joyStickLeft_Y,offset,L_center);
 
   //set the sensitivity of the joystick by using the readings from the pots
-  /*
-  int potLeft = analogRead(A4);
-  int potRight = analogRead(A5);
-  joyStickRight_X = joyStickRight_X * (potRight/1024);
-  joyStickRight_Y = joyStickRight_Y * (potRight/1024);
-  joyStickLeft_X = joyStickLeft_X * (potLeft/1024);
-  joyStickLeft_Y = joyStickLeft_Y * (potLeft/1024);
-  */
+  
+  int pot = analogRead(A4);
   
   //joystick readings are between 0 and 1024
   //scale the readings to -255 and 255
   data.motorSpeed_R = -((joyStickRight_X - 512)/2);
   data.motorSpeed_L = -((joyStickLeft_X - 512)/2);
-
+  
+  
+  data.motorSpeed_R = (int)(((float)data.motorSpeed_R * (float)pot)/1023.0f);
+  data.motorSpeed_L = (int)(((float)data.motorSpeed_L * (float)pot)/1023.0f);
   //shoot the data
   RadioManager.sendtoWait((char*)(&data), sizeof(data), RECEIVER_ADDRESS);
 
   //delay is recommended to prevent sending millions of data packets
   //all the time so that packets do not get stacked in the receivers buffer
-  delay(10);
+  delay(100);
 }
