@@ -43,9 +43,23 @@ int zeroOffset(int val,int offset, int center)
   }
    return val;
 }
-int calibrate(int uncal_center, int value)
+int arcade_drive_L(int throttle, int pitch)
 {
-  
+   int value = throttle+pitch;
+  if (value > 255)
+    return 255;
+  if (value < -255)
+    return -255;
+  return value;
+}
+int arcade_drive_R(int throttle, int pitch)
+{
+  int value = throttle-pitch;
+  if (value > 255)
+    return 255;
+  if (value < -255)
+    return -255;
+  return value;
 }
 void loop()
 {
@@ -53,24 +67,27 @@ void loop()
   int joyStickRight_Y = analogRead(A1);
   int joyStickLeft_X  = analogRead(A2);
   int joyStickLeft_Y = analogRead(A3);
-  
-  int offset = 40, R_center = 467, L_center = 512, center = 512;
+  int offset = 40, R_center = 467, L_center = 533, center = 512;
   joyStickRight_X = zeroOffset(joyStickRight_X,offset,R_center);
   joyStickRight_Y = zeroOffset(joyStickRight_Y,offset,R_center);
   joyStickLeft_X = zeroOffset(joyStickLeft_X,offset,L_center);
   joyStickLeft_Y = zeroOffset(joyStickLeft_Y,offset,L_center);
-
   //set the sensitivity of the joystick by using the readings from the pots
   
+  //write to the LED
   int pot = analogRead(A4);
-  
   analogWrite(6, (pot/4)*(3.3/5.0));
+
   //joystick readings are between 0 and 1024
   //scale the readings to -255 and 255
-  data.motorSpeed_R = -((joyStickRight_X - 512)/2);
-  data.motorSpeed_L = -((joyStickLeft_X - 512)/2);
+  int throttle = -((joyStickRight_X - 512)/2);
+  int pitch = -((joyStickLeft_Y - 512)/2);
   
+  //meld the values for arcade drive
+  data.motorSpeed_R = arcade_drive_R(throttle, pitch);
+  data.motorSpeed_L = arcade_drive_L(throttle, pitch);
   
+  //scale with pot
   data.motorSpeed_R = (int)(((float)data.motorSpeed_R * (float)pot)/1023.0f);
   data.motorSpeed_L = (int)(((float)data.motorSpeed_L * (float)pot)/1023.0f);
   //shoot the data
